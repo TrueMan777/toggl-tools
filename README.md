@@ -67,13 +67,13 @@ Splits Toggl time entries that span across midnight or exceed a maximum duration
 ### Overlap Detector
 
 ```bash
-python toggl_overlap_detector.py --days 30 --min-overlap 300
+python overlap_detector.py --days 30 --min-overlap 300
 ```
 
 ### Overnight Entry Splitter
 
 ```bash
-python toggl_overnight_splitter.py --days 30 --interactive
+python overnight_splitter.py --days 30 --interactive
 ```
 
 ## 📖 Documentation
@@ -81,7 +81,7 @@ python toggl_overnight_splitter.py --days 30 --interactive
 ### Overlap Detector
 
 ```
-python toggl_overlap_detector.py [options]
+python overlap_detector.py [options]
 ```
 
 #### Options
@@ -95,7 +95,7 @@ python toggl_overlap_detector.py [options]
 ### Overnight Entry Splitter
 
 ```
-python toggl_overnight_splitter.py [options]
+python overnight_splitter.py [options]
 ```
 
 #### Options
@@ -110,7 +110,7 @@ python toggl_overnight_splitter.py [options]
 
 ## 🧰 Requirements
 
-- Python 3.6+
+- Python 3.10+
 - Toggl account with API access
 - Required Python packages (see requirements.txt)
 

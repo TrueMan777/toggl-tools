@@ -118,9 +118,3 @@ dmypy.json
 .vscode/
 *.swp
 *.swo
-
-# Project specific
-toggl_api_client.py
-entry_processor.py
-toggl_overlap_detector.py
-toggl_overnight_splitter.py 
