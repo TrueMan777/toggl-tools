@@ -267,7 +267,7 @@ class EntryProcessor:
                         # Actually create the entry via the API client
                         start_time = datetime.fromisoformat(split_entry['start'].replace('Z', '+00:00'))
                         end_time = datetime.fromisoformat(split_entry['stop'].replace('Z', '+00:00'))
-                        
+
                         new_entry = self.api_client.create_time_entry(
                             description=split_entry['description'],
                             start_time=start_time,
@@ -333,7 +333,7 @@ class EntryProcessor:
                         # Actually create the entry via the API client
                         start_time = datetime.fromisoformat(split_entry['start'].replace('Z', '+00:00'))
                         end_time = datetime.fromisoformat(split_entry['stop'].replace('Z', '+00:00'))
-                        
+
                         new_entry = self.api_client.create_time_entry(
                             description=split_entry['description'],
                             start_time=start_time,
@@ -426,30 +426,30 @@ class EntryProcessor:
     def split_overnight_entry(self, entry):
         """
         Split an overnight entry into multiple entries, one for each day.
-        
+
         Args:
             entry (dict): Processed time entry that spans across midnight
-            
+
         Returns:
             list: List of split entries
         """
         if not entry["is_overnight"]:
             logger.warning("Attempted to split non-overnight entry")
             return [entry]
-            
+
         # Get start and end times in local timezone
         start_time = entry["start_time_local"]
         stop_time = entry["stop_time_local"]
-        
+
         # Initialize list of split entries
         split_entries = []
-        
+
         # Current day starts at the entry start time
         current_day_start = start_time
-        
+
         # Calculate the total number of days this entry spans
         days_spanned = (stop_time.date() - start_time.date()).days + 1
-        
+
         # Loop until we've covered the entire entry
         day_count = 0
         while current_day_start < stop_time:
@@ -458,10 +458,10 @@ class EntryProcessor:
             next_day = current_day_start.date() + timedelta(days=1)
             next_midnight = datetime.combine(next_day, datetime.min.time())
             next_midnight = self.timezone.localize(next_midnight)
-            
+
             # If next midnight is after the stop time, use the stop time instead
             current_day_end = min(next_midnight, stop_time)
-            
+
             # Create a new entry for this day
             day_entry = {
                 # Copy essential fields from the original entry
@@ -476,15 +476,15 @@ class EntryProcessor:
                 "created_with": "toggl_overnight_splitter",
                 "split_from_id": entry.get("id", None)
             }
-            
+
             # Add a note about this being a split entry
             day_entry["description"] = f"{day_entry['description']} (split {day_count}/{days_spanned})"
-            
+
             split_entries.append(day_entry)
             logger.debug(f"Split entry part: {current_day_start.strftime('%Y-%m-%d %H:%M')} to {current_day_end.strftime('%Y-%m-%d %H:%M')}")
-            
+
             # Move to the next day
             current_day_start = current_day_end
-            
+
         logger.info(f"Split overnight entry into {len(split_entries)} parts")
         return split_entries

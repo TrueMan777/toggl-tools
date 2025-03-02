@@ -27,6 +27,28 @@ Splits Toggl time entries that span across midnight or exceed a maximum duration
 - Interactive mode to confirm each split
 - Option to keep original entries after splitting
 
+### 🏷️ Toggl Untagged Entries Finder
+
+Identifies and lists all Toggl time entries that don't have any tags, helping you find entries that might need categorization.
+
+**Key Features:**
+- Lists all time entries without tags
+- Configurable date range and minimum duration
+- Multiple output formats (table, CSV, JSON)
+- Sorting options by date, duration, or description
+- Summary statistics of total untagged time
+
+### 🤖 Toggl Auto Tagger
+
+Automatically assigns tags to Toggl time entries based on their descriptions using customizable mapping rules.
+
+**Key Features:**
+- Automatically tags entries based on description patterns
+- Creates a template mapping file with all available tags
+- Interactive mode to confirm each tag assignment
+- Dry run mode to preview changes without applying them
+- Detailed statistics on applied tags
+
 ## 📋 Why These Tools Are Useful
 
 ### For Freelancers and Consultants
@@ -76,6 +98,18 @@ python overlap_detector.py --days 30 --min-overlap 300
 python overnight_splitter.py --days 30 --interactive
 ```
 
+### Untagged Entries Finder
+
+```bash
+python untagged_entries.py --days 30 --output table --sort-by date --min-duration 1
+```
+
+### Auto Tagger
+
+```bash
+python auto_tagger.py --days 30 --interactive
+```
+
 ## 📖 Documentation
 
 ### Overlap Detector
@@ -107,6 +141,69 @@ python overnight_splitter.py [options]
 - `--verbose`: Enable verbose logging
 - `--interactive`: Confirm each split before applying
 - `--no-delete`: Keep original entries after splitting
+
+### Untagged Entries Finder
+
+```
+python untagged_entries.py [options]
+```
+
+#### Options
+
+- `--api-key KEY`: Toggl API key (overrides environment variable and .env file)
+- `--days DAYS`: Number of days to look back (default: 7)
+- `--timezone TIMEZONE`: Timezone for time calculations (default: Asia/Shanghai)
+- `--verbose`: Enable verbose logging
+- `--output FORMAT`: Output format: table, csv, or json (default: table)
+- `--sort-by FIELD`: Sort results by: date, duration, or description (default: date)
+- `--min-duration MINUTES`: Minimum duration in minutes to include (default: 0)
+
+### Auto Tagger
+
+Automatically tag Toggl time entries based on their descriptions.
+
+```
+python auto_tagger.py [options]
+```
+
+Options:
+- `--api-key API_KEY`: Toggl API key (overrides environment variable and .env file)
+- `--days DAYS`: Number of days to look back (default: 7)
+- `--timezone TIMEZONE`: Timezone for time calculations (default: Asia/Shanghai)
+- `--verbose`: Enable verbose logging
+- `--dry-run`: Show what would be tagged without making changes
+- `--mapping-file MAPPING_FILE`: JSON file containing description to tag mappings (default: tag_mappings.json)
+- `--create-mapping`: Create a new mapping file with available tags
+- `--interactive`: Confirm each tag assignment before applying
+- `--untagged-only`: Only process entries without tags (default behavior)
+- `--all-entries`: Process all entries, including those that already have tags
+- `--min-duration MINUTES`: Minimum duration in minutes to include (default: 0)
+
+#### Tag Mapping File
+
+The tag mapping file is a JSON file that maps tags to description patterns. The format is:
+
+```json
+{
+  "Tag1": [
+    "pattern1",
+    "pattern2"
+  ],
+  "Tag2": [
+    "pattern3",
+    "pattern4"
+  ]
+}
+```
+
+**Note on pattern matching:**
+- Patterns are matched as whole words only, using word boundaries.
+- For example, the pattern "eat" will match "Let's eat lunch" but not "eating lunch".
+- Regex patterns are supported for more complex matching.
+- If a description matches patterns for multiple tags, all matching tags will be applied.
+
+You can create a template mapping file with all available tags using the `--create-mapping` option.
+
 
 ## 🧰 Requirements
 

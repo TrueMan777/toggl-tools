@@ -46,16 +46,16 @@ class TogglApiClient:
             raise ValueError("Toggl API key is required. Set TOGGL_API_KEY environment variable or pass it directly.")
 
         self.auth = requests.auth.HTTPBasicAuth(self.api_key, "api_token")
-        
+
         # Get workspace ID
         self.workspace_id = self._get_default_workspace_id()
-        
+
         logger.debug("Toggl API client initialized")
 
     def _get_default_workspace_id(self):
         """
         Get the default workspace ID for the user.
-        
+
         Returns:
             int: Default workspace ID
         """
@@ -100,10 +100,50 @@ class TogglApiClient:
         logger.info(f"Retrieved {len(response)} time entries")
         return response
 
+    def get_workspace_tags(self):
+        """
+        Retrieve all tags available in the workspace.
+
+        Returns:
+            list: List of tag objects with id and name
+        """
+        url = f"{self.BASE_URL}workspaces/{self.workspace_id}/tags"
+        logger.info(f"Retrieving tags for workspace {self.workspace_id}")
+        response = self._make_request("GET", url)
+        logger.info(f"Retrieved {len(response)} tags")
+        return response
+
+    def add_tags_to_time_entry(self, entry_id, tags):
+        """
+        Add tags to an existing time entry.
+
+        Args:
+            entry_id (str): ID of the time entry
+            tags (list): List of tag names to add
+
+        Returns:
+            dict: Updated time entry
+        """
+        # First get the current entry to preserve existing tags
+        url = f"{self.BASE_URL}me/time_entries/{entry_id}"
+        current_entry = self._make_request("GET", url)
+
+        # Combine existing tags with new tags, avoiding duplicates
+        existing_tags = current_entry.get('tags', [])
+        updated_tags = list(set(existing_tags + tags))
+
+        # Update the entry with the new tags
+        update_data = {
+            'tags': updated_tags
+        }
+
+        logger.info(f"Adding tags {tags} to time entry {entry_id}")
+        return self.update_time_entry(entry_id, update_data)
+
     def create_time_entry(self, description, start_time, end_time, tags=None, project_id=None, billable=False):
         """
         Create a new time entry in Toggl.
-        
+
         Args:
             description (str): Description of the time entry
             start_time (datetime): Start time of the entry
@@ -111,21 +151,21 @@ class TogglApiClient:
             tags (list): List of tags to apply to the entry
             project_id (int): Project ID to associate with the entry
             billable (bool): Whether the entry is billable
-            
+
         Returns:
             dict: The created time entry data
         """
         logger.info(f"Creating time entry: {description}")
-        
+
         # Calculate duration in seconds
         duration = int((end_time - start_time).total_seconds())
-        
+
         # Format start time in ISO 8601 format
         start_str = start_time.astimezone(pytz.UTC).isoformat().replace('+00:00', 'Z')
-        
+
         # Format end time in ISO 8601 format
         stop_str = end_time.astimezone(pytz.UTC).isoformat().replace('+00:00', 'Z')
-        
+
         # Prepare the time entry data
         time_entry_data = {
             'created_with': 'toggl_overnight_splitter',
@@ -136,21 +176,21 @@ class TogglApiClient:
             'billable': billable,
             'wid': self.workspace_id  # Add workspace ID
         }
-        
+
         # Add tags if provided
         if tags:
             time_entry_data['tags'] = tags
-            
+
         # Add project_id if provided
         if project_id:
             time_entry_data['project_id'] = project_id
-            
+
         logger.debug(f"Time entry data: {time_entry_data}")
-        
+
         # Make the API request
         url = f"{self.BASE_URL}workspaces/{self.workspace_id}/time_entries"
         logger.debug(f"Making POST request to {url}")
-        
+
         try:
             response = requests.post(
                 url,
@@ -181,7 +221,7 @@ class TogglApiClient:
         Returns:
             dict: Updated time entry
         """
-        url = f"{self.BASE_URL}me/time_entries/{entry_id}"
+        url = f"{self.BASE_URL}workspaces/{self.workspace_id}/time_entries/{entry_id}"
         logger.info(f"Updating time entry {entry_id}: {entry_data.get('description', 'No description')}")
         response = self._make_request("PUT", url, json=entry_data)
         logger.info(f"Updated time entry {entry_id}")
