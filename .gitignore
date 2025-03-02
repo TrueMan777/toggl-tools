@@ -94,6 +94,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+tag_mappings.json
 
 # Spyder project settings
 .spyderproject
