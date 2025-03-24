@@ -36,7 +36,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 1. Clone your fork of the repository
    ```
-   git clone https://github.com/yourusername/toggl-tools.git
+   git clone https://github.com/TrueMan777/toggl-tools.git
    cd toggl-tools
    ```
 
