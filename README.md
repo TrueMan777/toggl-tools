@@ -3,7 +3,8 @@
 A collection of utilities for Toggl time tracking to help you analyze and clean up your time entries.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 
 ## 🛠️ Tools Included
 
@@ -49,6 +50,18 @@ Automatically assigns tags to Toggl time entries based on their descriptions usi
 - Dry run mode to preview changes without applying them
 - Detailed statistics on applied tags
 
+### 💾 Toggl Entries Exporter
+
+Exports all Toggl time entries to a JSON file for backup, analysis, or data processing.
+
+**Key Features:**
+- Exports all time entries within a specified date range to JSON
+- Handles Toggl API limitations by fetching data in batches
+- Sorts entries by start date for easy analysis
+- Preserves non-ASCII characters (like Cyrillic)
+- Configurable minimum duration and inclusion of running entries
+- Option for pretty-printed JSON output
+
 ## 📋 Why These Tools Are Useful
 
 ### For Freelancers and Consultants
@@ -72,7 +85,7 @@ Automatically assigns tags to Toggl time entries based on their descriptions usi
 
 1. Clone this repository
    ```
-   git clone https://github.com/yourusername/toggl-tools.git
+   git clone https://github.com/TrueMan777/toggl-tools.git
    cd toggl-tools
    ```
 
@@ -89,7 +102,7 @@ Automatically assigns tags to Toggl time entries based on their descriptions usi
 ### Overlap Detector
 
 ```bash
-python overlap_detector.py --days 30 --min-overlap 300
+python overlap_detector.py --days 30 --min-overlap 60
 ```
 
 ### Overnight Entry Splitter
@@ -108,6 +121,12 @@ python untagged_entries.py --days 30 --output table --sort-by date --min-duratio
 
 ```bash
 python auto_tagger.py --days 30 --interactive
+```
+
+### Entries Exporter
+
+```bash
+python export_entries.py --days 90 --pretty --output-file my_toggl_data.json
 ```
 
 ## 📖 Documentation
@@ -204,6 +223,49 @@ The tag mapping file is a JSON file that maps tags to description patterns. The 
 
 You can create a template mapping file with all available tags using the `--create-mapping` option.
 
+### Entries Exporter
+
+```
+python export_entries.py [options]
+```
+
+#### Options
+- `--api-key KEY`: Toggl API key (overrides environment variable and .env file)
+- `--days DAYS`: Number of days to look back (default: 30)
+- `--timezone TIMEZONE`: Timezone for time calculations (default: Asia/Shanghai)
+- `--verbose`: Enable verbose logging
+- `--output-file FILE`: Output JSON file path (default: toggl_entries.json)
+- `--pretty`: Pretty-print the JSON output
+- `--include-running`: Include currently running time entries
+- `--min-duration MINUTES`: Minimum duration in minutes to include (default: 0)
+
+#### JSON Output Format
+
+The output JSON file has the following structure:
+
+```json
+{
+  "metadata": {
+    "exported_at": "2023-08-01T12:34:56.789012",
+    "entry_count": 123
+  },
+  "entries": [
+    {
+      "id": 1234567890,
+      "description": "Working on project",
+      "start": "2023-07-31T10:00:00+00:00",
+      "stop": "2023-07-31T12:30:00+00:00",
+      "duration": 9000,
+      "duration_formatted": "2h 30m",
+      "tags": ["Work", "Project"],
+      ...
+    },
+    ...
+  ]
+}
+```
+
+Entries are sorted by start date in ascending order, and non-ASCII characters (like Cyrillic) are preserved in their original form.
 
 ## 🧰 Requirements
 

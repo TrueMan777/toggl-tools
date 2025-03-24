@@ -306,7 +306,7 @@ def process_entries(api_client, entries, tag_mappings, dry_run=False, interactiv
         if existing_tags:
             print(f"{Fore.CYAN}Existing tags:{Style.RESET_ALL} {', '.join(existing_tags)}")
 
-        print(f"{Fore.CYAN}Tags to apply:{Style.RESET_ALL} {', '.join(matching_tags)}")
+        print(f"{Fore.CYAN}Tags to apply:{Style.RESET_ALL} {Fore.BLUE}{', '.join(matching_tags)}{Style.RESET_ALL}")
 
         # If interactive, ask for confirmation
         proceed = True
